@@ -14,8 +14,8 @@ function get(table, id) {
   let col = list(table);
   return col.filter(item, item.id === id)[0] || null;
 }
-function upsert(table, data, id) {
-  db[collection].push(data);
+function upsert(table, data) {
+  db[table].push(data);
 }
 function remove(table, id) {
   return true;
