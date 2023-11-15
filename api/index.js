@@ -1,11 +1,13 @@
-const express = require("express");
+import express from "express";
+import { router } from "./components/user/network.js";
+import config from "../config.js";
 
-const config = require("../config.js");
-const user = require('./components/user/network');
 const app = express();
 
+app.use(express.json());
+
 // ROUTER
-app.use('/api/user', user);
+app.use("/api/user", router);
 
 app.listen(config.api.port, () => {
   console.log("Api escuchando en el puerto: " + config.api.port);
