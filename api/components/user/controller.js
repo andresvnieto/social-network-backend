@@ -8,10 +8,11 @@ export default function Controller(injectedStore) {
   if (!store) {
     store = import("../../../store/dummy.js");
   }
-  function list() {
+  async function list() {
     return store.list(TABLA);
   }
-  function get(id) {
+  async function get(id) {
+    console.log(store.get(TABLA, id));
     return store.get(TABLA, id);
   }
   async function upsert(body) {
@@ -35,5 +36,6 @@ export default function Controller(injectedStore) {
     }
     return store.upsert(TABLA, user);
   }
+  
   return { list, get, upsert };
 }

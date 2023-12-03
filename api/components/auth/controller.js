@@ -1,4 +1,5 @@
-import { sign } from "../../../auth/jwt.js";
+import bcrypt from "bcrypt";
+import auth from "../../../auth/index.js";
 const TABLA = "auth";
 
 export default function Controller(injectedStore) {
@@ -7,7 +8,7 @@ export default function Controller(injectedStore) {
     store = import("../../../store/dummy.js");
   }
 
-  function upsert(data) {
+  async function upsert(data) {
     const authData = {
       id: data.id,
     };
@@ -17,7 +18,7 @@ export default function Controller(injectedStore) {
     }
 
     if (data.password) {
-      authData.password = data.password;
+      authData.password = await bcrypt.hash(data.password, 5);
     }
 
     return store.upsert(TABLA, authData);
@@ -25,14 +26,15 @@ export default function Controller(injectedStore) {
 
   async function login(username, password) {
     const data = await store.query(TABLA, { username: username });
-    if (data.password === password) {
-      //Generar token
-      const token = sign(data);
-      return token;
-    } else {
-      throw new Error("Información invalida");
-    }
-    return data;
+    return bcrypt.compare(password, data.password).then((validPassword) => {
+      if (validPassword === true) {
+        //Generar token
+        const token = auth.sign(data);
+        return token;
+      } else {
+        throw new Error("Información invalida");
+      }
+    });
   }
 
   return {
